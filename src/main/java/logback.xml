@@ -1,0 +1,17 @@
+<configuration>
+    <jmxConfigurator/>
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d %-5level %logger{10} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="*" level="info"/>
+
+    <root>
+        <level>DEBUG</level>
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>
