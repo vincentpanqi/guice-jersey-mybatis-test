@@ -8,3 +8,6 @@ https://github.com/Squarespace/jersey2-guice/wiki
 
 2.guice-mybatis集成
 http://www.mybatis.org/guice/getting-started.html
+
+3.guice-jetty-http-server集成
+https://github.com/palominolabs/jetty-http-server-wrapper
