@@ -5,7 +5,7 @@ import org.mybatis.guice.transactional.Transactional;
 import com.google.inject.Inject;
 import com.tch.test.guice_jersey_mybatis_test.mapper.UserMapper;
 
-public class FooServiceMapperImpl implements FooService {
+public class UserServiceImpl implements UserService {
 
     @Inject
     private UserMapper userMapper;

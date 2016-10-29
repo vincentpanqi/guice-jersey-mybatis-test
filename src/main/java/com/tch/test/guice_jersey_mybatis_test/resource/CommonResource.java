@@ -10,7 +10,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import com.google.inject.Inject;
-import com.tch.test.guice_jersey_mybatis_test.service.FooService;
+import com.tch.test.guice_jersey_mybatis_test.service.UserService;
 
 @Path("/global")
 @Produces(MediaType.APPLICATION_JSON)
@@ -18,7 +18,7 @@ import com.tch.test.guice_jersey_mybatis_test.service.FooService;
 public class CommonResource {
 
 	@Inject
-	private FooService fooService;
+	private UserService userService;
 	
   /**
    * 获取系统当前时间
@@ -36,7 +36,7 @@ public class CommonResource {
 	System.out.println("userId : " + userId);
     String username;
 	try {
-		username = fooService.getUsername(userId);
+		username = userService.getUsername(userId);
 		return username;
 	} catch (Exception e) {
 		e.printStackTrace();
