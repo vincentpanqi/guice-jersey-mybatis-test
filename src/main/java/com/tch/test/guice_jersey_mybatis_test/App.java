@@ -41,24 +41,6 @@ import com.tch.test.guice_jersey_mybatis_test.service.UserServiceImpl;
  */
 public class App {
 	
-	/**
-	 * 配置guice-jersey集成
-	 * 参考：https://github.com/Squarespace/jersey2-guice/wiki
-	 * @param modules
-	 */
-	private static void configGuiceJersey(List<Module> modules){
-		modules.add(new JerseyGuiceModule("__HK2_Generated_0"));
-		modules.add(new ServletModule());
-		modules.add(new AbstractModule() {
-		    @Override
-		    protected void configure() {
-		    	//注册其他组件
-		    	bind(UserService.class).to(UserServiceImpl.class);
-		    	//注册resource管理组件
-		    	bind(MyApplication.class);
-		    }
-		  });
-	}
 	public static void main(String[] args) throws Exception {
 		List<Module> modules = new ArrayList<>();
 		//guice-jersey集成部分
@@ -70,6 +52,9 @@ public class App {
 		//guice-jetty-server集成部分
 		configGuiceJettyServer(modules);
 		
+		//service/repository等业务组件注册
+		configBusinessModule(modules);
+		
 		//依据所有module创建injector
 		Injector injector = Guice.createInjector(modules);
 		JerseyGuiceUtils.install(injector);
@@ -80,6 +65,29 @@ public class App {
 		//configAndStartGrizzlyServer(injector);
 	}
 	
+	/**
+	 * 配置guice-jersey集成
+	 * 参考：https://github.com/Squarespace/jersey2-guice/wiki
+	 * @param modules
+	 */
+	private static void configGuiceJersey(List<Module> modules){
+		modules.add(new JerseyGuiceModule("__HK2_Generated_0"));
+		modules.add(new ServletModule());
+	}
+	
+	/**
+	 * service/dao等业务组件绑定
+	 * @param modules
+	 */
+	private static void configBusinessModule(List<Module> modules) {
+		modules.add(new AbstractModule() {
+		    @Override
+		    protected void configure() {
+		    	bind(UserService.class).to(UserServiceImpl.class);
+		    	bind(MyApplication.class);
+		    }
+		  });
+	}
 	public static void configAndStartGrizzlyServer(Injector injector) throws IOException {
 		URI baseUri = UriBuilder.fromUri("http://localhost/").port(8080).build();
 	    HttpServer server = GrizzlyHttpServerFactory.createHttpServer(baseUri, injector.getInstance(MyApplication.class));
