@@ -173,11 +173,11 @@ public class App {
 	         */
 			private Properties getMybatisProperties(){
 				Properties myBatisProperties = new Properties();
-	    		myBatisProperties.setProperty("mybatis.environment.id", "xxx");
-	    		myBatisProperties.setProperty("JDBC.driver", "xxx");
-	    		myBatisProperties.setProperty("JDBC.url", "xxx");
-	    		myBatisProperties.setProperty("JDBC.username", "xxx");
-	    		myBatisProperties.setProperty("JDBC.password", "xxx");
+	    		myBatisProperties.setProperty("mybatis.environment.id", "demo1");
+	    		myBatisProperties.setProperty("JDBC.driver", "org.gjt.mm.mysql.Driver");
+	    		myBatisProperties.setProperty("JDBC.url", "jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true");
+	    		myBatisProperties.setProperty("JDBC.username", "root");
+	    		myBatisProperties.setProperty("JDBC.password", "root");
 	    		myBatisProperties.setProperty("JDBC.autoCommit", "false");
 	    		return myBatisProperties;
 	        }
