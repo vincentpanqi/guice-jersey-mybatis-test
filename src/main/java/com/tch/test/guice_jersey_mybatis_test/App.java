@@ -6,8 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import javax.ws.rs.Path;
 import javax.ws.rs.core.UriBuilder;
 
+import com.google.inject.matcher.Matchers;
+import com.tch.test.guice_jersey_mybatis_test.interceptor.MyInterceptor;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.eclipse.jetty.util.resource.Resource;
 import org.glassfish.grizzly.http.server.HttpServer;
@@ -83,8 +86,14 @@ public class App {
 		modules.add(new AbstractModule() {
 		    @Override
 		    protected void configure() {
-		    	bind(UserService.class).to(UserServiceImpl.class);
+		    	bind(UserService.class).to(UserServiceImpl.class).in(Scopes.SINGLETON);
 		    	bind(MyApplication.class);
+				MyInterceptor interceptor = new MyInterceptor();
+				bind(MyInterceptor.class).toInstance(interceptor);
+				requestInjection(interceptor);
+				bindInterceptor(Matchers.inSubpackage("com.tch.test.guice_jersey_mybatis_test.resource"),
+						Matchers.annotatedWith(Path.class),
+						interceptor);
 		    }
 		  });
 	}
@@ -174,8 +183,8 @@ public class App {
 			private Properties getMybatisProperties(){
 				Properties myBatisProperties = new Properties();
 	    		myBatisProperties.setProperty("mybatis.environment.id", "demo1");
-	    		myBatisProperties.setProperty("JDBC.driver", "org.gjt.mm.mysql.Driver");
-	    		myBatisProperties.setProperty("JDBC.url", "jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true");
+	    		myBatisProperties.setProperty("JDBC.driver", "com.mysql.jdbc.Driver");
+	    		myBatisProperties.setProperty("JDBC.url", "jdbc:mysql://127.0.0.1:3306/test?useUnicode=true&characterEncoding=UTF-8");
 	    		myBatisProperties.setProperty("JDBC.username", "root");
 	    		myBatisProperties.setProperty("JDBC.password", "root");
 	    		myBatisProperties.setProperty("JDBC.autoCommit", "false");

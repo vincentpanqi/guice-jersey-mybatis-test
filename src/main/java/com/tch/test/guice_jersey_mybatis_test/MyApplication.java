@@ -1,5 +1,6 @@
 package com.tch.test.guice_jersey_mybatis_test;
 
+import com.tch.test.guice_jersey_mybatis_test.interceptor.RestInterceptorBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import com.tch.test.guice_jersey_mybatis_test.filter.MyResponseFilter;
@@ -15,6 +16,8 @@ public class MyApplication extends ResourceConfig {
         
         //注册filter
         register(MyResponseFilter.class);
+
+        register(new RestInterceptorBinder());
         //也可以单独注册一个resource
         //register(CommonResource.class);
     }
