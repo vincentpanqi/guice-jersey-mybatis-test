@@ -1,16 +1,16 @@
 package com.tch.test.guice_jersey_mybatis_test;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-
-import javax.ws.rs.Path;
-import javax.ws.rs.core.UriBuilder;
-
+import com.google.inject.*;
 import com.google.inject.matcher.Matchers;
-import com.tch.test.guice_jersey_mybatis_test.interceptor.MyInterceptor;
+import com.google.inject.name.Names;
+import com.google.inject.servlet.ServletModule;
+import com.palominolabs.http.server.*;
+import com.squarespace.jersey2.guice.JerseyGuiceModule;
+import com.squarespace.jersey2.guice.JerseyGuiceUtils;
+import com.tch.test.guice_jersey_mybatis_test.interceptor.MyResourceInterceptor;
+import com.tch.test.guice_jersey_mybatis_test.interceptor.MyServiceInterceptor;
+import com.tch.test.guice_jersey_mybatis_test.service.UserService;
+import com.tch.test.guice_jersey_mybatis_test.service.UserServiceImpl;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.eclipse.jetty.util.resource.Resource;
 import org.glassfish.grizzly.http.server.HttpServer;
@@ -19,24 +19,12 @@ import org.glassfish.jersey.servlet.ServletContainer;
 import org.mybatis.guice.MyBatisModule;
 import org.mybatis.guice.datasource.builtin.PooledDataSourceProvider;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.google.inject.Module;
-import com.google.inject.Provider;
-import com.google.inject.Scopes;
-import com.google.inject.name.Names;
-import com.google.inject.servlet.ServletModule;
-import com.palominolabs.http.server.HttpResourceHandlerConfig;
-import com.palominolabs.http.server.HttpServerConnectorConfig;
-import com.palominolabs.http.server.HttpServerWrapperConfig;
-import com.palominolabs.http.server.HttpServerWrapperFactory;
-import com.palominolabs.http.server.HttpServerWrapperModule;
-import com.squarespace.jersey2.guice.JerseyGuiceModule;
-import com.squarespace.jersey2.guice.JerseyGuiceUtils;
-import com.tch.test.guice_jersey_mybatis_test.service.UserService;
-import com.tch.test.guice_jersey_mybatis_test.service.UserServiceImpl;
+import javax.ws.rs.core.UriBuilder;
+import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * Hello world!
@@ -57,7 +45,10 @@ public class App {
 		
 		//service/repository等业务组件注册
 		configBusinessModule(modules);
-		
+
+		//interceptor拦截器module
+		configInterceptorModule(modules);
+
 		//依据所有module创建injector
 		Injector injector = Guice.createInjector(modules);
 		JerseyGuiceUtils.install(injector);
@@ -88,15 +79,38 @@ public class App {
 		    protected void configure() {
 		    	bind(UserService.class).to(UserServiceImpl.class).in(Scopes.SINGLETON);
 		    	bind(MyApplication.class);
-				MyInterceptor interceptor = new MyInterceptor();
-				bind(MyInterceptor.class).toInstance(interceptor);
-				requestInjection(interceptor);
-				bindInterceptor(Matchers.inSubpackage("com.tch.test.guice_jersey_mybatis_test.resource"),
-						Matchers.annotatedWith(Path.class),
-						interceptor);
 		    }
 		  });
 	}
+
+	/**
+	 * interceptor拦截器module(https://github.com/mycom-int/jersey-guice-aop)
+	 * @param modules
+	 */
+	private static void configInterceptorModule(List<Module> modules) {
+		modules.add(new AbstractModule() {
+			@Override
+			protected void configure() {
+				//参考https://github.com/mycom-int/jersey-guice-aop
+				//jersey-guice集成之后,拦截Jersey的resource和其他guice管理对象的拦截是不同的
+
+				//Jersey resource拦截器(在RestInterceptorService中配置)
+				MyResourceInterceptor restInterceptor = new MyResourceInterceptor();
+				bind(MyResourceInterceptor.class).toInstance(restInterceptor);
+
+				//非resource拦截器
+				MyServiceInterceptor normalInterceptor = new MyServiceInterceptor();
+				bind(MyServiceInterceptor.class).toInstance(normalInterceptor);
+
+				//非Jersey-resource的拦截器,通过下面的方式配置(只拦截service包下的方法)
+				requestInjection(normalInterceptor);
+				bindInterceptor(Matchers.inSubpackage("com.tch.test.guice_jersey_mybatis_test.service"),
+						Matchers.any(),
+						normalInterceptor);
+			}
+		});
+	}
+
 	public static void configAndStartGrizzlyServer(Injector injector) throws IOException {
 		URI baseUri = UriBuilder.fromUri("http://localhost/").port(8080).build();
 	    HttpServer server = GrizzlyHttpServerFactory.createHttpServer(baseUri, injector.getInstance(MyApplication.class));

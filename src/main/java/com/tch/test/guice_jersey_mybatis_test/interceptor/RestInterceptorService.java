@@ -16,7 +16,7 @@ import java.util.List;
 
 public class RestInterceptorService implements InterceptionService {
     @Inject
-    private Provider<MyInterceptor> interceptorProvider;
+    private Provider<MyResourceInterceptor> interceptorProvider;
 
     @Override
     public List<ConstructorInterceptor> getConstructorInterceptors(Constructor<?> arg0) {
@@ -32,6 +32,7 @@ public class RestInterceptorService implements InterceptionService {
     public List<MethodInterceptor> getMethodInterceptors(Method method) {
         List<MethodInterceptor> ret = Lists.newArrayList();
         if (method.isAnnotationPresent(Path.class)) {
+            //说明是Jersey-resource的方法,添加对应的拦截器
             ret.add(interceptorProvider.get());
         }
         return ret;

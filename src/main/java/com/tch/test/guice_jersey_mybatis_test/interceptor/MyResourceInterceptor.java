@@ -11,24 +11,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 
 /**
+ * 拦截Jersey-resource的method拦截器
  * Created by higgs on 2017/6/30.
  */
-public class MyInterceptor implements MethodInterceptor {
+public class MyResourceInterceptor implements MethodInterceptor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MyInterceptor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MyResourceInterceptor.class);
 
     @Inject
     private Provider<HttpServletRequest> servletRequestProvider;
 
     public Object invoke(MethodInvocation invocation) throws Throwable {
-        LOGGER.info("MyInterceptor invoked ......");
         if (invocation.getMethod().isAnnotationPresent(Path.class)) {
             Path path = invocation.getMethod().getAnnotation(Path.class);
-            long start = System.currentTimeMillis();
-            Object ret = invocation.proceed();
-            long duration = System.currentTimeMillis() - start;
             HttpServletRequest request = servletRequestProvider.get();
-            LOGGER.info("url {}, method {}, duration {}ms", request.getRequestURI(), request.getMethod(), duration);
+            LOGGER.info("jersey-resource拦截器执行,url {}, method {}", request.getRequestURI(), request.getMethod());
+            Object ret = invocation.proceed();
             return ret;
         }
         return invocation.proceed();
