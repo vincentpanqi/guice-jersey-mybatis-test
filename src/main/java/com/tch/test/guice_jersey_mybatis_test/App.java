@@ -9,8 +9,8 @@ import com.squarespace.jersey2.guice.JerseyGuiceModule;
 import com.squarespace.jersey2.guice.JerseyGuiceUtils;
 import com.tch.test.guice_jersey_mybatis_test.interceptor.MyResourceInterceptor;
 import com.tch.test.guice_jersey_mybatis_test.interceptor.MyServiceInterceptor;
-import com.tch.test.guice_jersey_mybatis_test.service.UserService;
-import com.tch.test.guice_jersey_mybatis_test.service.UserServiceImpl;
+import com.tch.test.guice_jersey_mybatis_test.service.AccountService;
+import com.tch.test.guice_jersey_mybatis_test.service.AccountServiceImpl;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.eclipse.jetty.util.resource.Resource;
 import org.glassfish.grizzly.http.server.HttpServer;
@@ -77,7 +77,7 @@ public class App {
 		modules.add(new AbstractModule() {
 		    @Override
 		    protected void configure() {
-		    	bind(UserService.class).to(UserServiceImpl.class).in(Scopes.SINGLETON);
+		    	bind(AccountService.class).to(AccountServiceImpl.class).in(Scopes.SINGLETON);
 		    	bind(MyApplication.class);
 		    }
 		  });

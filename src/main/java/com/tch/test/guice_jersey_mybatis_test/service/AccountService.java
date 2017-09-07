@@ -2,8 +2,10 @@ package com.tch.test.guice_jersey_mybatis_test.service;
 
 import com.tch.test.guice_jersey_mybatis_test.model.Account;
 
-public interface UserService {
+public interface AccountService {
 
-	Account getUsername(Long userId);
-	
+	Account getAccount(Long userId);
+
+	Account addAccount(Account account);
+
 }

@@ -1,17 +1,15 @@
 package com.tch.test.guice_jersey_mybatis_test.resource;
 
+import com.alibaba.fastjson.JSON;
 import com.google.inject.Inject;
-import com.tch.test.guice_jersey_mybatis_test.mapper.DictMapper;
 import com.tch.test.guice_jersey_mybatis_test.model.Account;
-import com.tch.test.guice_jersey_mybatis_test.service.UserService;
-import com.tch.test.guice_jersey_mybatis_test.vo.School;
+import com.tch.test.guice_jersey_mybatis_test.service.AccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.Date;
-import java.util.List;
 
 @Path("/global")
 @Produces(MediaType.APPLICATION_JSON)
@@ -19,11 +17,7 @@ import java.util.List;
 public class CommonResource {
 
     @Inject
-    private UserService userService;
-
-    @Inject
-    private DictMapper dictMapper;
-
+    private AccountService accountService;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommonResource.class);
 
@@ -39,34 +33,21 @@ public class CommonResource {
     }
 
     @GET
-    @Path("/getUsername/{userId}")
-    public String getUsername(@PathParam("userId") Long userId) {
+    @Path("/account/{userId}")
+    public String getAccount(@PathParam("userId") Long userId) {
         LOGGER.info("userId : {}", userId);
-        String username;
-        try {
-            Account account = userService.getUsername(userId);
-            if (account != null) {
-                return account.getChineseName();
-            }
-            return "用户不存在";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return e.getMessage();
+        Account account = accountService.getAccount(userId);
+        if (account != null) {
+            return account.getChineseName();
         }
+        return "用户不存在";
     }
 
-    @GET
-    @Path("/fuzzyByName")
-    public String fuzzyByName(@QueryParam("text") String text) {
-        List<School> schools;
-        try {
-            System.out.println("text: " + text);
-            schools = dictMapper.fuzzyByName(text);
-            return schools.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return e.getMessage();
-        }
+    @POST
+    @Path("/account")
+    public Account addAccount(Account account) {
+        LOGGER.info("userId : {}", JSON.toJSONString(account));
+        return accountService.addAccount(account);
     }
 
 }
