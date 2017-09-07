@@ -2,16 +2,14 @@ package com.tch.test.guice_jersey_mybatis_test.resource;
 
 import com.google.inject.Inject;
 import com.tch.test.guice_jersey_mybatis_test.mapper.DictMapper;
-import com.tch.test.guice_jersey_mybatis_test.mapper.UserMapper;
+import com.tch.test.guice_jersey_mybatis_test.model.Account;
 import com.tch.test.guice_jersey_mybatis_test.service.UserService;
-import com.tch.test.guice_jersey_mybatis_test.vo.MyVo;
 import com.tch.test.guice_jersey_mybatis_test.vo.School;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -26,8 +24,6 @@ public class CommonResource {
     @Inject
     private DictMapper dictMapper;
 
-    @Inject
-    private UserMapper userMapper;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommonResource.class);
 
@@ -44,12 +40,15 @@ public class CommonResource {
 
     @GET
     @Path("/getUsername/{userId}")
-    public String getUsername(@PathParam("userId") String userId) {
+    public String getUsername(@PathParam("userId") Long userId) {
         LOGGER.info("userId : {}", userId);
         String username;
         try {
-            username = userService.getUsername(userId);
-            return username;
+            Account account = userService.getUsername(userId);
+            if (account != null) {
+                return account.getChineseName();
+            }
+            return "用户不存在";
         } catch (Exception e) {
             e.printStackTrace();
             return e.getMessage();
@@ -68,12 +67,6 @@ public class CommonResource {
             e.printStackTrace();
             return e.getMessage();
         }
-    }
-
-    @GET
-    @Path("/mybatis/test")
-    public List<MyVo> testMybatisAnnotation() {
-        return userMapper.getExistOrgNames(Arrays.asList(1, 2, 3));
     }
 
 }

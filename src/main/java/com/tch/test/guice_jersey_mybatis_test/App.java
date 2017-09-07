@@ -198,7 +198,7 @@ public class App {
 				Properties myBatisProperties = new Properties();
 	    		myBatisProperties.setProperty("mybatis.environment.id", "demo1");
 	    		myBatisProperties.setProperty("JDBC.driver", "com.mysql.jdbc.Driver");
-	    		myBatisProperties.setProperty("JDBC.url", "jdbc:mysql://127.0.0.1:3306/test?useUnicode=true&characterEncoding=UTF-8");
+	    		myBatisProperties.setProperty("JDBC.url", "jdbc:mysql://172.16.56.99:3307/test?useUnicode=true&characterEncoding=UTF-8");
 	    		myBatisProperties.setProperty("JDBC.username", "root");
 	    		myBatisProperties.setProperty("JDBC.password", "root");
 	    		myBatisProperties.setProperty("JDBC.autoCommit", "false");
