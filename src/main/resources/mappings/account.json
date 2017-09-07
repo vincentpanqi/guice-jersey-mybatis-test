@@ -1,0 +1,23 @@
+{
+  "properties": {
+    "id": {
+      "type": "long"
+    },
+    "chineseName": {
+      "type": "string",
+      "index": "not_analyzed"
+    },
+    "englishName": {
+      "type": "string",
+      "index": "not_analyzed"
+    },
+    "email": {
+      "type": "string",
+      "index": "analyzed"
+    },
+    "hobby": {
+      "type": "string",
+      "index": "analyzed"
+    }
+  }
+}
